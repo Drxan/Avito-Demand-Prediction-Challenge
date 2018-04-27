@@ -15,7 +15,7 @@ from keras import backend as K
 def create_cnn(seq_length, word_num, embedding_dim):
     x_input = Input(shape=(seq_length,))
     embed = Embedding(input_shape=(seq_length,), input_dim=word_num+1, output_dim=embedding_dim)(x_input)
-    hidden = Conv1D(filters=128, kernel_size=3, activation='relu')(embed)
+    hidden = Conv1D(filters=128, kernel_size=5, activation='relu')(embed)
     # hidden = MaxPooling1D(pool_size=2)(hidden)
     # hidden = Conv1D(filters=64, kernel_size=3, activation='relu')(hidden)
     hidden = MaxPooling1D(pool_size=K.get_variable_shape(hidden)[1])(hidden)
