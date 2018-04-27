@@ -12,7 +12,7 @@ import drxan
 from keras.callbacks import EarlyStopping
 
 
-EMBEDDING_SIZE = 128
+EMBEDDING_SIZE = 64
 MAX_LEN = 50
 BATCH_SIZE = 128
 
@@ -22,6 +22,7 @@ data_dirs = dict()
 data_dirs['train_data'] = os.path.join(current_dir, 'data/train.csv')
 data_dirs['test_data'] = os.path.join(current_dir, 'data/test.csv')
 data_dirs['pred_result'] = os.path.join(current_dir, 'data/preds.csv')
+
 
 def train_model():
     print('[1] Extracting features from train data...')
@@ -39,7 +40,7 @@ def train_model():
     best_epoch = len(train_hist.epoch)
 
     print('[4] Training the final model...')
-    train_hist = model.fit(x_train, target, batch_size=BATCH_SIZE, epochs=best_epoch, validation_split=0.25)
+    train_hist = model.fit(x_train, target, batch_size=BATCH_SIZE, epochs=best_epoch)
 
     return word_dict, model
 

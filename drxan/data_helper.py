@@ -14,7 +14,7 @@ from keras.preprocessing import sequence
 def extract_features(data_path, target=None, word_dict=None):
     data = pd.read_csv(data_path)
     if target is not None:
-        data = pd.read_csv(data_path, nrows=200000)
+        data = pd.read_csv(data_path, nrows=500000)
         txt_sequences, word_dict = convert_text_to_sequence(data[['title', 'description']], word_dict)
     else:
         txt_sequences = convert_text_to_sequence(data[['title', 'description']], word_dict)
