@@ -43,7 +43,7 @@ def train_model():
     early_stop = EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='auto')
     check_point = ModelCheckpoint(data_dirs['model_path'], 'val_loss', verbose=1, save_best_only=True)
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=1 / math.e, verbose=1, patience=10, min_lr=0.0001)
-    tensor_board = TensorBoard(log_dir=data_dirs['logs_path'])
+    tensor_board = TensorBoard(log_dir=data_dirs['logs_path'], histogram_freq=0, write_graph=True, write_images=True)
     train_hist = model.fit(x_train, target, batch_size=BATCH_SIZE, epochs=1000, validation_split=0.25,
                            callbacks=[early_stop, check_point, reduce_lr, tensor_board])
     return word_dict
