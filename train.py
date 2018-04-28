@@ -12,6 +12,7 @@ import drxan
 import math
 from keras.callbacks import EarlyStopping, ModelCheckpoint,ReduceLROnPlateau, TensorBoard
 from keras.models import load_model
+from keras import losses
 
 
 EMBEDDING_SIZE = 64
@@ -40,7 +41,7 @@ def train_model():
     print('[2] Creating DNN model...')
     model = drxan.models.create_cnn(seq_length=MAX_LEN, word_num=len(word_dict), embedding_dim=EMBEDDING_SIZE)
     print(model.summary())
-    model.compile(optimizer='adam', loss=drxan.loss.rmse)
+    model.compile(optimizer='adam', loss=losses.mse)
 
     print('[3] Training model,find the best model...')
     early_stop = EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='auto')
@@ -58,7 +59,7 @@ def predict(word_dict):
     x_test = drxan.data_helper.pad_sequences(txt_seq, max_len=MAX_LEN)
 
     print('[6] Predicting the test data...')
-    model = load_model(data_dirs['model_path'], custom_objects={'root_mean_squared_error': drxan.loss.rmse})
+    model = load_model(data_dirs['model_path'])
     preds = model.predict(x_test)
     pred_items['deal_probability'] = preds.reshape(-1)
     pred_items.to_csv(data_dirs['pred_result'], index=False)

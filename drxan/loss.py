@@ -4,7 +4,7 @@
 # @Email   : yuwei8905@126.com
 # @File    : loss.py
 # @Software: PyCharm
-
+# 由于根号函数的导数可能出现无穷大值，会破坏网络参数更新，弃用该自定义损失函数
 
 from keras import backend as K
 
