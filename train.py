@@ -31,7 +31,10 @@ data_dirs['logs_path'] = os.path.join(current_dir, 'data/logs/')
 
 def train_model():
     print('[1] Extracting features from train data...')
-    txt_seq, target, word_dict = drxan.data_helper.extract_features(data_dirs['train_data'], target='deal_probability', word_dict=None)
+    txt_seq, target, word_dict = drxan.data_helper.extract_features(data_dirs['train_data'],
+                                                                    target='deal_probability',
+                                                                    word_dict=None,
+                                                                    min_freq=10)
     x_train = drxan.data_helper.pad_sequences(txt_seq, max_len=MAX_LEN)
 
     print('[2] Creating DNN model...')
