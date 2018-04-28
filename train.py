@@ -15,8 +15,13 @@ from keras.models import load_model
 from keras import losses
 
 
+# 词嵌入维度
 EMBEDDING_SIZE = 64
+# 文本序列最大长度
 MAX_LEN = 50
+# 最小词频
+MIN_FREQ = 3
+# 训练深度模型时用于参数更新的样本数量
 BATCH_SIZE = 128
 
 current_dir = os.getcwd()
@@ -35,7 +40,7 @@ def train_model():
     txt_seq, target, word_dict = drxan.data_helper.extract_features(data_dirs['train_data'],
                                                                     target='deal_probability',
                                                                     word_dict=None,
-                                                                    min_freq=10)
+                                                                    min_freq=MIN_FREQ)
     x_train = drxan.data_helper.pad_sequences(txt_seq, max_len=MAX_LEN)
 
     print('[2] Creating DNN model...')
