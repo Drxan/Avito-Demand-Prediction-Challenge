@@ -45,7 +45,7 @@ def filter_text(text, filters=None, lower=True):
     return text
 
 
-def get_word_dict(texts, stop_words=[], min_freq=1):
+def get_word_dict(texts, stop_words=[], min_freq=5):
     """
     根据原始训练语料建立词到数值的映射字典
     :param texts:
@@ -56,9 +56,10 @@ def get_word_dict(texts, stop_words=[], min_freq=1):
     word_count = Counter()
     for txt in texts:
         txt = filter_text(txt, filters=None, lower=True)
-        tokens = [w.strip() for w in txt.split(' ')]
+        tokens = [w.strip() for w in txt.split(' ') if w not in ['', ' ']+stop_words]
         word_count.update(tokens)
-    for w in list(word_count.keys()) + ['', ' '] + stop_words:
+    # 去掉低频词
+    for w in list(word_count.keys()):
         if word_count[w] < min_freq:
             del word_count[w]
     word_dict = dict(zip(word_count, range(1, len(word_count)+1)))
