@@ -56,11 +56,11 @@ def get_word_dict(texts, stop_words=[], min_freq=5):
     word_count = Counter()
     for txt in texts:
         txt = filter_text(txt, filters=None, lower=True)
-        tokens = [w.strip() for w in txt.split(' ') if w not in ['', ' ']+stop_words]
+        tokens = [w.strip() for w in txt.split(' ')]
         word_count.update(tokens)
-    # 去掉低频词
+    # 去掉低频词和停止词
     for w in list(word_count.keys()):
-        if word_count[w] < min_freq:
+        if (word_count[w] < min_freq) or (w in ['', ' ']+stop_words):
             del word_count[w]
     word_dict = dict(zip(word_count, range(1, len(word_count)+1)))
     word_dict['UNK'] = len(word_dict)+1
