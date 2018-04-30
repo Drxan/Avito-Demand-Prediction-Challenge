@@ -8,3 +8,4 @@
 from . import data_helper
 from . import models
 from . import loss
+from . import train_models
