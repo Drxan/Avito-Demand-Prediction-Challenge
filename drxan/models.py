@@ -7,9 +7,10 @@
 
 
 from keras.models import Model
-from keras.layers import Input, Embedding, Conv1D, MaxPooling1D, Flatten, Dropout, BatchNormalization, Dense
+from keras.layers import Input, Embedding, Conv1D, MaxPooling1D, Flatten, Dropout, BatchNormalization, Dense, LSTM
 from keras.layers.merge import concatenate
 from keras import backend as K
+from keras import initializers
 
 
 def create_cnn(seq_length, word_num, embedding_dim):
@@ -92,44 +93,32 @@ def create_multi_dnn(x_dim, sparse=True):
 
 
 def create_cnn_dense(seq_length, word_num, embedding_dim, x_dim, sparse=True):
+    # CNN part,input:text sequence
     cnn_input = Input(shape=(seq_length,))
-    embed = Embedding(input_shape=(seq_length,), input_dim=word_num + 1, output_dim=embedding_dim)(cnn_input)
-    cnn_hidden = Conv1D(filters=128, kernel_size=3, activation='relu')(embed)
+    embed = Embedding(input_shape=(seq_length,),
+                      input_dim=word_num + 1,
+                      output_dim=embedding_dim,
+                      embeddings_initializer=initializers.glorot_uniform(seed=9))(cnn_input)
+    cnn_hidden = Conv1D(filters=128, kernel_size=5, activation='relu')(embed)
     cnn_hidden = MaxPooling1D(pool_size=K.get_variable_shape(cnn_hidden)[1])(cnn_hidden)
     cnn_hidden = Flatten()(cnn_hidden)
     cnn_hidden = BatchNormalization()(cnn_hidden)
 
+    # Dense pasrt, input:tf-idf
     dense_input = Input(shape=(x_dim,), sparse=sparse)
 
-    dense_hidden1 = Dense(units=16, activation='relu')(dense_input)
-    dense_hidden1 = Dense(units=64, activation='relu')(dense_hidden1)
-    dense_hidden1 = BatchNormalization()(dense_hidden1)
-    dense_hidden1 = Dense(units=64, activation='relu')(dense_hidden1)
-    dense_hidden1 = BatchNormalization()(dense_hidden1)
+    dense_hidden = Dense(units=64, activation='relu')(dense_input)
+    dense_hidden = BatchNormalization()(dense_hidden)
 
-    dense_hidden2 = Dense(units=16, activation='relu')(dense_input)
-    dense_hidden2 = Dense(units=64, activation='relu')(dense_hidden2)
-    dense_hidden2 = BatchNormalization()(dense_hidden2)
-    dense_hidden2 = Dense(units=64, activation='relu')(dense_hidden2)
-    dense_hidden2 = BatchNormalization()(dense_hidden2)
-
-    dense_hidden3 = Dense(units=16, activation='relu')(dense_input)
-    dense_hidden3 = Dense(units=64, activation='relu')(dense_hidden3)
-    dense_hidden3 = BatchNormalization()(dense_hidden3)
-    dense_hidden3 = Dense(units=64, activation='relu')(dense_hidden3)
-    dense_hidden3 = BatchNormalization()(dense_hidden3)
-
-    dense_hidden4 = Dense(units=16, activation='relu')(dense_input)
-    dense_hidden4 = Dense(units=64, activation='relu')(dense_hidden4)
-    dense_hidden4 = BatchNormalization()(dense_hidden4)
-    dense_hidden4 = Dense(units=64, activation='relu')(dense_hidden4)
-    dense_hidden4 = BatchNormalization()(dense_hidden4)
-
-    hidden = concatenate([cnn_hidden, dense_hidden1, dense_hidden2, dense_hidden3, dense_hidden4])
-    hidden = Dropout(0.5)(hidden)
-    hidden = Dense(units=64, activation='relu')(hidden)
+    # merge the two parts above
+    hidden = concatenate([dense_hidden, cnn_hidden])
+    # hidden = Dropout(0.3)(hidden)
+    hidden = Dense(units=128, activation='tanh')(hidden)
+    hidden = Dropout(0.3)(hidden)
     hidden = BatchNormalization()(hidden)
-    hidden = Dense(units=64, activation='relu')(hidden)
+    hidden = Dense(units=64, activation='tanh')(hidden)
+    hidden = BatchNormalization()(hidden)
+    hidden = Dense(units=32, activation='tanh')(hidden)
 
     output = Dense(units=1, activation='sigmoid')(hidden)
 
