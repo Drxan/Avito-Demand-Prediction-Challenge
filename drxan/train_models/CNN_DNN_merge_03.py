@@ -12,13 +12,13 @@ import math
 from keras.models import load_model
 
 # 词嵌入维度
-EMBEDDING_SIZE = 32
+EMBEDDING_SIZE = 64
 # 文本序列最大长度
 MAX_LEN = 50
 # 最小词频
 MIN_FREQ = 3
 # 训练深度模型时用于参数更新的样本数量
-BATCH_SIZE = 128
+BATCH_SIZE = 256
 
 
 def train(data_dirs):
@@ -55,7 +55,7 @@ def train(data_dirs):
     return word_dict, tfidf_transformer
 
 
-def predict(word_dict, tfidf_transformer, data_dirs): 
+def predict(word_dict, tfidf_transformer, data_dirs):
     print('[4] Converting test texts to sequences...')
     txt_seq, pred_items = drxan.data_helper.extract_features(data_dirs['test_data'], target=None, word_dict=word_dict)
     x_test_seq = drxan.data_helper.pad_sequences(txt_seq, max_len=MAX_LEN)

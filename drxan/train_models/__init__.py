@@ -8,5 +8,7 @@
 from . import textCNN_01
 from . import tfidfDNN_02
 from . import CNN_DNN_merge_03
+from . import lightGBM_04
+
 
 
