@@ -17,37 +17,45 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.sparse import issparse
 
 
-def extract_features(data_path, target=None, word_dict=None, min_freq=5):
+def extract_features(data_path, text_columns=None, target=None, word_dict=None, min_freq=5):
     data = pd.read_csv(data_path)
+    if text_columns is None:
+        text_columns = ['title', 'description']
     if target is not None:
         # data = pd.read_csv(data_path, nrows=500000)
-        txt_sequences, word_dict = convert_text_to_sequence(data[['title', 'description']], word_dict, min_freq=min_freq)
+        txt_sequences, word_dict = convert_text_to_sequence(data[text_columns], word_dict, min_freq=min_freq)
     else:
-        txt_sequences = convert_text_to_sequence(data[['title', 'description']], word_dict)
+        txt_sequences = convert_text_to_sequence(data[text_columns], word_dict)
     if target is not None:
         return txt_sequences, data[target].values, word_dict
     else:
         return txt_sequences, data[['item_id']]
 
 
-def load_text_data(data_path, train=False):
+def load_text_data(data_path, train=False, text_columns=None):
+    if text_columns is None:
+        text_columns = ['title', 'description']
+    column_len = len(text_columns)
     if train:
-        texts = pd.read_csv(data_path, usecols=['title', 'description', 'deal_probability'])
+        texts = pd.read_csv(data_path, usecols=text_columns + ['deal_probability'])
         targets = texts['deal_probability'].values
-        texts = texts[['title', 'description']].apply(lambda x: str(x[0])+('' if x[1] is np.nan else ' '+str(x[1])), axis=1)
+        texts = texts[text_columns].apply(lambda x: ' '.join([('' if x[i] is np.nan else str(x[i])) for i in range(column_len)]), axis=1)
         texts = texts.apply(filter_text)
         return texts, targets
     else:
-        texts = pd.read_csv(data_path, usecols=['title', 'description', 'item_id'])
+        texts = pd.read_csv(data_path, usecols=text_columns + ['item_id'])
         pred_items = texts[['item_id']]
-        texts = texts[['title', 'description']].apply(lambda x: str(x[0])+('' if x[1] is np.nan else ' '+str(x[1])), axis=1)
+        texts = texts[text_columns].apply(
+            lambda x: ' '.join([('' if x[i] is np.nan else str(x[i])) for i in range(column_len)]), axis=1)
         texts = texts.apply(filter_text)
         return texts, pred_items
 
 
-def get_tfidf(data_path, tfidf_transformer=None, train=False):
+def get_tfidf(data_path, tfidf_transformer=None, train=False, text_columns=None):
+    if text_columns is None:
+        text_columns = ['title', 'description']
     print('get_tfidf:loading raw text data...')
-    texts, targets = load_text_data(data_path, train=train)
+    texts, targets = load_text_data(data_path, train=train, text_columns=text_columns)
     if train:
         print('get_tfidf:training TfidfVectorizer...')
         stop_words = list(stopwords.words('russian')) + list(stopwords.words('english'))

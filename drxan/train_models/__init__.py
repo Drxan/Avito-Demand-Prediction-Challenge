@@ -5,10 +5,10 @@
 @author : Drxan
 @create_time : 18-4-29 上午8:19
 """
-from . import textCNN_01
-from . import tfidfDNN_02
-from . import CNN_DNN_merge_03
-from . import lightGBM_04
+from . import M01_textCNN
+from . import M02_tfidfDNN
+from . import M03_CNN_DNN_merge
+from . import M04_lightGBM
 
 
 

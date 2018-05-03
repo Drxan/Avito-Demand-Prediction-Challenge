@@ -20,4 +20,4 @@ data_dirs['model_path'] = os.path.join(current_dir, 'data/model_data/lightGBM_04
 
 
 if __name__ == '__main__':
-    train_models.lightGBM_04.train_predict(data_dirs)
+    train_models.M04_lightGBM.train_predict(data_dirs)
