@@ -9,7 +9,7 @@ from . import M01_textCNN
 from . import M02_tfidfDNN
 from . import M03_CNN_DNN_merge
 from . import M04_lightGBM
-from . import  M05_CNN_DNN_merge
+from . import M05_CNN_DNN_merge
 
 
 
